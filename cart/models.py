@@ -1,6 +1,6 @@
 from django.db import models
-#from django.contrib.auth.models import User
-from userauth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class Cart(models.Model):
     CHOICES_SIZES = [('normal', 'Normal'),('s', 'Small'),('m', 'Medium'),('l', 'Large'), ('xl', 'Extra Large')]

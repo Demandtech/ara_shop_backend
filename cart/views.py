@@ -10,6 +10,15 @@ from rest_framework.response import Response
 def cart(request):
     user = request.user
     if request.method == 'POST':
+        existing_cart_item = Cart.objects.filter(
+            user=user, 
+            product_id=request.data['product_id'], 
+            color=request.data['color']).first()
+      
+        if existing_cart_item:
+            return Response({"message": "Item already in the cart."}, status=status.HTTP_400_BAD_REQUEST)
+
+
         serializer = CartSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=user)

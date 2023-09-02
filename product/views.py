@@ -81,11 +81,13 @@ def best_seller(request):
      serializer = ProductBestSellerSerializer(products, many=True)
      return Response(serializer.data)
 
+
 @api_view(['GET'])
 def featured(request):
      products = Product.objects.filter(featured=True)
      serializer = ProductSerializer(products, many=True)
      return Response(serializer.data)
+
 
 @api_view(['GET'])
 def search_products(request):
