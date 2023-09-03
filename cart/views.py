@@ -16,13 +16,13 @@ def cart(request):
             color=request.data['color']).first()
       
         if existing_cart_item:
-            return Response({"message": "Item already in the cart."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Item already in the cart!"}, status=status.HTTP_400_BAD_REQUEST)
 
 
         serializer = CartSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=user)
-            return Response({"message":"Item add successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message":"Item add successfully!"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     carts = user.cart_set.all()
@@ -52,3 +52,32 @@ def remove_cart(request, pk):
         serializer.save()
         return Response({"message": "Cart item updated!"}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST', 'PUT'])
+@permission_classes([IsAuthenticated])
+def update_cart_list(request):
+    user = request.user
+    if request.method == 'POST':
+        items_data = request.data
+
+        new_cart_items = []
+
+        for item_data in items_data:
+
+            existing_cart_item = Cart.objects.filter(
+            user=user, 
+            product_id=item_data['product_id'], 
+            color=item_data['color']).first()
+
+            if existing_cart_item:
+                return Response({"message": "Item already in the cart!"}, status=status.HTTP_400_BAD_REQUEST) 
+
+            serializer = CartSerializer(data=item_data)
+            if serializer.is_valid():
+                new_cart_item = serializer.save(user=user)
+                new_cart_items.append(new_cart_item)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(CartSerializer(new_cart_items, many=True).data, status=status.HTTP_201_CREATED)
