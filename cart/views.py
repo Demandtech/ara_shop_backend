@@ -57,9 +57,12 @@ def remove_cart(request, pk):
 @api_view(['POST', 'PUT'])
 @permission_classes([IsAuthenticated])
 def update_cart_list(request):
+
     user = request.user
+    items_data = request.data
+
     if request.method == 'POST':
-        items_data = request.data
+        
 
         new_cart_items = []
 
@@ -81,3 +84,26 @@ def update_cart_list(request):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         return Response(CartSerializer(new_cart_items, many=True).data, status=status.HTTP_201_CREATED)
+    
+    elif request.method == 'PUT':
+        update_cart_Items = []
+
+        for item_data in items_data:
+
+            existing_cart_item = Cart.objects.filter(
+            user=user, 
+            product_id=item_data['product_id'], 
+            color=item_data['color']).first()
+
+            if not existing_cart_item:
+                return Response({"message": "Item not found in the cart!"}, status=status.HTTP_404_NOT_FOUND)
+        
+            serializer = CartSerializer(existing_cart_item, data=item_data)
+
+            if serializer.is_valid():
+                update_cart_Item = serializer.save(user=user)
+                update_cart_Items.append(update_cart_Item)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(CartSerializer(update_cart_Items, many=True).data, status=status.HTTP_200_OK)
