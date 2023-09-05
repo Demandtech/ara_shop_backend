@@ -1,10 +1,10 @@
 from django.urls import path
 from . import views
 
-urlpatterns=[
+urlpatterns = [
     path('', views.product),
     path('<int:pk>', views.product_detail),
-    path('<str:category>', views.category_product),
+    path('category/<str:category>/', views.category_product),
     path('best_sellers/', views.best_seller),
     path('featured/', views.featured),
     path('search/', views.search_products),

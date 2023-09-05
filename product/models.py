@@ -2,8 +2,10 @@ from django.db import models
 from django import forms
 
 # Create your models here.
+
 class Product(models.Model):
-    CHOICES_CATEGORY = [('men', 'Men'),('women', 'Women'),('accessory', 'Accessory')]
+    CHOICES_CATEGORY = [('men', 'Men'), ('women', 'Women'),
+                        ('accessories', 'Accessories')]
 
     name = models.CharField(max_length=500)
     category = models.TextField(choices=CHOICES_CATEGORY)
